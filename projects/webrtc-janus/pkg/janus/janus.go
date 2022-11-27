@@ -15,7 +15,7 @@ import (
 	"github.com/rs/xid"
 )
 
-var debug = false
+var debug = true
 
 func unexpected(request string) error {
 	return fmt.Errorf("unexpected response received: '%s' request",request)
@@ -32,7 +32,6 @@ func generateTransactionId() xid.ID {
 }
 
 // Public function
-// Create Gateway object 인것 아닌가? 네이밍을 변경할 필요가 있음.
 // janus-admin-protocol
 // janus-protocal
 func Connect(wsURL string) (*Gateway, error) {
