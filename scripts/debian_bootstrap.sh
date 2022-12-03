@@ -31,6 +31,9 @@ sudo apt-get install -y libgstreamer1.0-dev \
 
 export PKG_CONFIG_PATH="/usr/local/opt/libffi/lib/pkgconfig"
 
+# Install janus tools
+sudo apt-get install -y janus-tools
+
 # Install ffmpeg
 sudo apt install -y ffmpeg
 
