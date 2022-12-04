@@ -31,7 +31,7 @@ func watchHandle(handle *janus.Handle) {
 	}
 }
 
-// go run main.go -container-path=/vagrant/projects/webrtc-janus/assets/01.mp4
+// go run main.go -container-path=/vagrant/sample/janus/assets/01.mp4
 func main() {
 
 	containerPath := ""
@@ -134,7 +134,7 @@ func main() {
 				panic(keepAliveErr)
 			}
 
-			time.Sleep(5 * time.Second)
+			time.Sleep(30 * time.Second)
 		}
 	}()
 
@@ -146,9 +146,9 @@ func main() {
         "room": roomId,
         "request": "create",
         "description": "Demo Room",
-		"admin_key": "jaster",
+		"admin_key": "janusoverlord",
         "secret": "adminpwd",
-        "publishers": 6,
+        "publishers": 3,
         "bitrate": 128000,
         "fir_freq": 10,
         "record": false,

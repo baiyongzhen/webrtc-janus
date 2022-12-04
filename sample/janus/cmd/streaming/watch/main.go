@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"example.com/webrtc-janus/pkg/janus"
+	"github.com/pion/interceptor"
 	"github.com/pion/webrtc/v3"
-	_ "github.com/pion/webrtc/v3/pkg/media/oggwriter"
-)
 
+)
 
 func watchHandle(handle *janus.Handle) {
 	// wait for event
@@ -30,88 +30,78 @@ func watchHandle(handle *janus.Handle) {
 	}
 }
 
-
+// https://github.com/pion/webrtc/blob/master/examples/save-to-disk/main.go
 func main() {
 
-	mediaEngine := &webrtc.MediaEngine{}
+	// Create a MediaEngine object to configure the supported codec
+	m := &webrtc.MediaEngine{}
 
 	// Setup the codecs you want to use.
-	// Only support VP8 and OPUS, this makes our WebM muxer code simpler
-	if err := mediaEngine.RegisterCodec(webrtc.RTPCodecParameters{
-		RTPCodecCapability: webrtc.RTPCodecCapability{MimeType: "video/h264", ClockRate: 90000, Channels: 0, SDPFmtpLine: "", RTCPFeedback: nil},
+	// We'll use a VP8 and Opus but you can also define your own
+	if err := m.RegisterCodec(webrtc.RTPCodecParameters{
+		RTPCodecCapability: webrtc.RTPCodecCapability{MimeType: webrtc.MimeTypeVP8, ClockRate: 90000, Channels: 0, SDPFmtpLine: "", RTCPFeedback: nil},
 		PayloadType:        96,
 	}, webrtc.RTPCodecTypeVideo); err != nil {
 		panic(err)
 	}
-	if err := mediaEngine.RegisterCodec(webrtc.RTPCodecParameters{
-		RTPCodecCapability: webrtc.RTPCodecCapability{MimeType: "audio/opus", ClockRate: 48000, Channels: 0, SDPFmtpLine: "", RTCPFeedback: nil},
+	if err := m.RegisterCodec(webrtc.RTPCodecParameters{
+		RTPCodecCapability: webrtc.RTPCodecCapability{MimeType: webrtc.MimeTypeOpus, ClockRate: 48000, Channels: 0, SDPFmtpLine: "", RTCPFeedback: nil},
 		PayloadType:        111,
 	}, webrtc.RTPCodecTypeAudio); err != nil {
 		panic(err)
 	}
 
+	// Create a InterceptorRegistry. This is the user configurable RTP/RTCP Pipeline.
+	// This provides NACKs, RTCP Reports and other features. If you use `webrtc.NewPeerConnection`
+	// this is enabled by default. If you are manually managing You MUST create a InterceptorRegistry
+	// for each PeerConnection.
+	i := &interceptor.Registry{}
+	// Use the default set of Interceptors
+	if err := webrtc.RegisterDefaultInterceptors(m, i); err != nil {
+		panic(err)
+	}
 
-	peerConnectionConfig := webrtc.Configuration{
+	// Create the API object with the MediaEngine
+	api := webrtc.NewAPI(webrtc.WithMediaEngine(m), webrtc.WithInterceptorRegistry(i))
+
+	// Prepare the configuration
+	config := webrtc.Configuration{
 		ICEServers: []webrtc.ICEServer{
 			{
 				URLs: []string{"stun:stun.l.google.com:19302"},
 			},
-			/*{
-				URLs:       []string{"turn:numb.viagenie.ca"},
-				Username:   "webrtc@live.com",
-				Credential: "muazkh",
-			},*/
 		},
-		SDPSemantics: webrtc.SDPSemanticsUnifiedPlanWithFallback,
-    }
+	}
 
 	// Create a new RTCPeerConnection
-	var peerConnection *webrtc.PeerConnection
-	peerConnection, err := webrtc.NewAPI(webrtc.WithMediaEngine(mediaEngine)).NewPeerConnection(peerConnectionConfig)
+	peerConnection, err := api.NewPeerConnection(config)
 	if err != nil {
 		panic(err)
 	}
 
-	/*
 	// Allow us to receive 1 audio track, and 1 video track
 	if _, err = peerConnection.AddTransceiverFromKind(webrtc.RTPCodecTypeAudio); err != nil {
 		panic(err)
 	} else if _, err = peerConnection.AddTransceiverFromKind(webrtc.RTPCodecTypeVideo); err != nil {
 		panic(err)
 	}
-	*/
 
+	// Set a handler for when a new remote track starts, this handler saves buffers to disk as
+	// an ivf file, since we could have multiple video tracks we provide a counter.
+	// In your application this is where you would handle/process video
+	peerConnection.OnTrack(func(track *webrtc.TrackRemote, receiver *webrtc.RTPReceiver) {
+		fmt.Printf("Track has started, of type %d: %s \n", track.PayloadType(), track.Codec().RTPCodecCapability.MimeType)
+	})
+
+	// Set the handler for ICE connection state
+	// This will notify you when the peer has connected/disconnected
 	peerConnection.OnICEConnectionStateChange(func(connectionState webrtc.ICEConnectionState) {
 		fmt.Printf("Connection State has changed %s \n", connectionState.String())
 	})
 
-	peerConnection.OnTrack(func(track *webrtc.TrackRemote, receiver *webrtc.RTPReceiver) {
-		fmt.Printf("Track has started, of type %d: %s \n", track.PayloadType(), track.Codec().RTPCodecCapability.MimeType)
-		/*
-		codec := track.Codec()
-		fmt.Println(codec.MimeType)
-		if codec.Name == webrtc.Opus {
-			fmt.Println("Got Opus track, saving to disk as output.ogg")
-			i, oggNewErr := oggwriter.New("output.ogg", codec.ClockRate, codec.Channels)
-			if oggNewErr != nil {
-				panic(oggNewErr)
-			}
-			//saveToDisk(i, track)
-		} else if codec.Name == webrtc.VP8 {
-			fmt.Println("Got VP8 track, saving to disk as output.ivf")
-			i, ivfNewErr := ivfwriter.New("output.ivf")
-			if ivfNewErr != nil {
-				panic(ivfNewErr)
-			}
-			//saveToDisk(i, track)
-		}
-		*/
-	})
-
-
 	jaunsURL := "ws://localhost:8188/janus"
 
-    // Create Janus
+	// Create Janus
 	fmt.Println(jaunsURL)
 	gateway, err := janus.Connect(jaunsURL)
 	if err != nil {
@@ -134,7 +124,7 @@ func main() {
 				panic(keepAliveErr)
 			}
 
-			time.Sleep(5 * time.Second)
+			time.Sleep(30 * time.Second)
 		}
 	}()
 
@@ -151,12 +141,13 @@ func main() {
 	// Watch the second stream
 	msg, err := handle.Message(map[string]interface{}{
 		"request": "watch",
-		"id":      6,
+		"id":      1,
 	}, nil)
 	if err != nil {
 		panic(err)
 	}
 
+	// Set the remote SessionDescription
 	// Wait for the offer to be pasted
 	if msg.Jsep != nil {
 		err = peerConnection.SetRemoteDescription(webrtc.SessionDescription{
@@ -170,19 +161,19 @@ func main() {
 		panic(err)
 	}
 
+	// https://github.com/pion/webrtc/issues/2193
 	// Create answer
 	answer, err := peerConnection.CreateAnswer(nil)
 	if err != nil {
 		panic(err)
 	}
 
-	//fmt.Println(answer.SDP)
 	_, err = handle.Message(map[string]interface{}{
 		"request": "start",
-		"id": 6,
+		"id":      1,
 	}, map[string]interface{}{
 		"type": "answer",
-		"sdp": answer.SDP,
+		"sdp":  answer.SDP,
 	})
 	if err != nil {
 		panic(err)
@@ -190,13 +181,17 @@ func main() {
 
 	// Create channel that is blocked until ICE Gathering is complete
 	gatherComplete := webrtc.GatheringCompletePromise(peerConnection)
+
+	err = peerConnection.SetLocalDescription(answer)
+	if err != nil {
+		panic(err)
+	}
+
 	// Block until ICE Gathering is complete, disabling trickle ICE
 	// we do this because we only can exchange one signaling message
 	// in a production application you should exchange ICE Candidates via OnICECandidate
 	<-gatherComplete
 
-
 	select {}
-
 
 }

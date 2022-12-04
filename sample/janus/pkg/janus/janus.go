@@ -420,7 +420,6 @@ func (handle *Handle) Message(body, jsep interface{}) (*EventMsg, error) {
 
 GetMessage: // No tears..
 	msg := <-ch
-	//glog.Infoln("msg.(type):", msg.(type))
 	switch msg := msg.(type) {
 	case *AckMsg:
 		goto GetMessage // ..only dreams.
