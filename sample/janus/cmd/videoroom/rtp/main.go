@@ -50,11 +50,6 @@ func main() {
 			{
 				URLs: []string{"stun:stun.l.google.com:19302"},
 			},
-			/*{
-				URLs:       []string{"turn:numb.viagenie.ca"},
-				Username:   "webrtc@live.com",
-				Credential: "muazkh",
-			},*/
 		},
 		SDPSemantics: webrtc.SDPSemanticsUnifiedPlanWithFallback,
     }
@@ -134,7 +129,7 @@ func main() {
 				panic(keepAliveErr)
 			}
 
-			time.Sleep(30 * time.Second)
+			time.Sleep(3 * time.Second)
 		}
 	}()
 
@@ -213,7 +208,6 @@ func main() {
 		},
 	}
 
-	time.Sleep(8 * time.Second)
 	_, err = handle.Message(map[string]interface{}{
 		"request": "rtp_forward",
 		"room": roomId,
@@ -232,8 +226,6 @@ func main() {
 		"room": roomId,
 		"publisher_id": feedId,
 		"host": "192.168.56.168",
-		//"host_family": "ipv4",
-		"admin_key": "janusoverlord",
         "secret": "adminpwd",
 		"audio_port": 5006,
 		"video_port": 5011,
@@ -242,9 +234,6 @@ func main() {
 		fmt.Println(err.Error())
 		//panic(err)
 	}
-
-
-
 
 	select {}
 

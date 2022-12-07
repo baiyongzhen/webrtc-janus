@@ -79,7 +79,7 @@ RUN cd ${WORK_FOLDER} \
   && git clone https://github.com/meetecho/janus-gateway.git -b v0.13.0 --depth=1 \
   && cd janus-gateway \
   && sh autogen.sh \
-  && ./configure --prefix=/opt/janus \
+  && ./configure --prefix=/opt/janus --enable-docs \
   && make \
   && make install \
   && make configs

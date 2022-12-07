@@ -278,7 +278,6 @@ rtp-h264-sample: {
 	id = 6
 	description = "Opus/H264 live stream coming from janus"
 	audio = true
-	#video = false
 	video = true
 	data = true
 	audioport = 5006
@@ -290,7 +289,6 @@ rtp-h264-sample: {
 
 	videoport = 5011
 	videopt = 100
-	#videortpmap = "VP8/90000"
 	videortpmap = "H264/90000"
 	secret = "adminpwd"
 }
