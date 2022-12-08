@@ -135,6 +135,8 @@ func main() {
 
 	go watchHandle(handle)
 
+	roomId := 1234
+	/*
 	roomId := 2532488013468683936
 
     _, err = handle.Request(map[string]interface{}{
@@ -152,7 +154,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
+	*/
+	
 	joinmsg, err := handle.Message(map[string]interface{}{
 		"request": "join",
 		"ptype":   "publisher",
