@@ -279,9 +279,8 @@ rtp-h264-sample: {
 	description = "Opus/H264 live stream coming from janus"
 	audio = true
 	video = true
-	data = true
+	data = false
 	audioport = 5006
-	audiortcpport = 5007
 	audiopt = 111
 	dataport = 5010
 	audiortpmap = "opus/48000/2"
