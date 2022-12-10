@@ -51,7 +51,7 @@ EOF
 
 source /home/vagrant/.profile
 
-# Install Package
+# Install Package for Libretro
 sudo apt-get update && sudo apt-get install -y \
     gcc \
     curl \
