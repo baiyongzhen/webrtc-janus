@@ -50,3 +50,15 @@ export GOPATH PATH
 EOF
 
 source /home/vagrant/.profile
+
+# Install Package
+sudo apt-get update && sudo apt-get install -y \
+    gcc \
+    curl \
+    make \
+    pkg-config \
+    libvpx-dev \
+    libopus-dev \
+    libx264-dev \
+    libopusfile-dev \
+    libsdl2-dev \
