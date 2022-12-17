@@ -13,11 +13,13 @@ services:
       - "7088:7088"
       - "8088:8088"
       - "8188:8188"
-      - "10000-10200:10000-10200/udp"
+      #- "10000-10200:10000-10200/udp"
+      - "10000-10010:10000-10010/udp"
       - "5002:5002/udp" # streaming rtp-sample
       - "5004:5004/udp" # streaming audioport
       - "5006:5006/udp" # streaming audioport
       - "5011:5011/udp" # streaming videoport
+      - "5012:5012/udp" # streaming audioport for audiobridge
     logging:
       driver: "json-file"
       options:

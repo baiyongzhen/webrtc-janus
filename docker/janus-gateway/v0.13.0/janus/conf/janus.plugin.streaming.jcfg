@@ -272,7 +272,6 @@ file-ondemand-sample: {
 #}
 
 
-
 rtp-h264-sample: {
 	type = "rtp"
 	id = 6
@@ -289,5 +288,18 @@ rtp-h264-sample: {
 	videoport = 5011
 	videopt = 100
 	videortpmap = "H264/90000"
+	secret = "adminpwd"
+}
+
+
+rtp-audiobridge-sample: {
+	type = "rtp"
+	id = 7
+	description = "Opus live stream coming from janus audiobridge"
+	audio = true
+	audioport = 5012
+	audiopt = 100
+	audiortpmap = "opus/48000/2"
+	collision = 1
 	secret = "adminpwd"
 }

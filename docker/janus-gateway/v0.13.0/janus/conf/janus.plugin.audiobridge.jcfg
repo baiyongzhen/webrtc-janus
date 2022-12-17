@@ -77,7 +77,17 @@ room-1234: {
 	description = "Demo Room"
 	secret = "adminpwd"
 	sampling_rate = 16000
-	record = false
-	#record_dir = "/path/to/"
+	spatial_audio = true
+	audiolevel_event = true
+	audio_active_packets = 100
+	audio_level_average = 25 # 127=음소거됨, 0=너무 시끄러움, 기본값=25
+	record = true
+	record_dir = "/tmp/audiobridge/1234"
 	#record_file = "recording.wav"
+
+	rtp_forward_host = "192.168.56.168"
+	rtp_forward_port = 5012
+	#rtp_forward_codec = "opus"
+	#rtp_forward_always_on = true
+
 }

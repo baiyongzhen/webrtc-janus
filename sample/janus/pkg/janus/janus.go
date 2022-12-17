@@ -15,7 +15,7 @@ import (
 	"github.com/rs/xid"
 )
 
-var debug = false
+var debug = true
 
 func unexpected(request string) error {
 	return fmt.Errorf("unexpected response received: '%s' request",request)
