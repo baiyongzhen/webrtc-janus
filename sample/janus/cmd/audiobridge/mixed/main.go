@@ -32,19 +32,26 @@ func watchHandle(handle *janus.Handle) {
 	}
 }
 
-//go run main.go -container-path=/vagrant/sample/janus/assets/02.mp4 --player=1 --position=100
+//go run main.go -container-path=/vagrant/sample/janus/assets/02.mp4 --player=1 --spatial_position=100
 func main() {
 
 	containerPath := ""
 	jaunsURL := ""
 	player := ""
 	room := ""
-	position := ""
+	spatial_position := ""
+	bitrate := ""
+	quality := ""
+	volume := ""
+
 	flag.StringVar(&containerPath, "container-path", "", "path to the media file you want to playback")
-	flag.StringVar(&jaunsURL, "janus-url", "ws://localhost:8188/janus", "ws://localhost:8188/janus")
+	flag.StringVar(&jaunsURL, "janus-url", "ws://localhost:8188/janus", "janus websocket url")
 	flag.StringVar(&player, "player", "123", "123")
 	flag.StringVar(&room, "room", "1234", "1234") //default room id
-	flag.StringVar(&position, "position", "0", "0")
+	flag.StringVar(&spatial_position, "spatial_position", "50", "0=left, 50=center, 100=right")
+	flag.StringVar(&bitrate, "bitrate", "0", "default=0 libopus decides")
+	flag.StringVar(&quality, "quality", "4", "0-10, Opus-related complexity to use, the higher the value, the better the quality, default is 4")
+	flag.StringVar(&volume, "volume", "100", "percent value, <100 reduces volume, >100 increases volume; optional, default is 100")
 	flag.Parse()
 
 	if containerPath == "" {
@@ -138,13 +145,16 @@ func main() {
 	go watchHandle(handle)
 
 	var msg *janus.EventMsg
-	//joinId := rand.Intn(100)
+
 	x3 := rand.NewSource(5)
     y3 := rand.New(x3)
 	num, _ := strconv.Atoi(player)
 	joinId := y3.Intn(200) + num
 	roomid, _ := strconv.Atoi(room)
-	spatial_position, _ := strconv.Atoi(position)
+	s, _ := strconv.Atoi(spatial_position)
+	b, _ := strconv.Atoi(bitrate)
+	q , _ := strconv.Atoi(quality)
+	v , _ := strconv.Atoi(volume)
 
 	msg, err = handle.Message(map[string]interface{}{
 		"request": "join",
@@ -152,10 +162,10 @@ func main() {
 		"id": joinId,
 		"display": containerPath,
 		"muted": true,
-		"bitrate": 128,
-		"quality": 7,
-		"volume": 20,
-		"spatial_position": spatial_position, //0=left, 50=center, 100=right)
+		"bitrate": b,
+		"quality": q,
+		"volume": v,
+		"spatial_position": s,
 	}, nil)
 	if err != nil {
 		panic(err)

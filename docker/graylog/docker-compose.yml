@@ -37,7 +37,7 @@ services:
       - GRAYLOG_PASSWORD_SECRET=somepasswordpepper
       # Password: admin
       - GRAYLOG_ROOT_PASSWORD_SHA2=e1b24204830484d635d744e849441b793a6f7e1032ea1eef40747d95d30da592
-      - GRAYLOG_HTTP_EXTERNAL_URI=http://192.168.56.127:9000/
+      - GRAYLOG_HTTP_EXTERNAL_URI=http://192.168.56.168:9000/
     entrypoint: /usr/bin/tini -- wait-for-it elasticsearch:9200 --  /docker-entrypoint.sh
     networks:
       - graylog
