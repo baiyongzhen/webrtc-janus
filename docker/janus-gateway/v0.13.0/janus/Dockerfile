@@ -1,4 +1,6 @@
-FROM debian:latest
+#FROM debian:latest
+FROM debian:11
+
 
 ENV BUILD_FOLDER /tmp/build
 ENV WORK_FOLDER /opt
@@ -37,6 +39,8 @@ RUN apt-get install -y wget \
 
 RUN PATH="/usr/local/bin:$PATH"
 RUN yes | apt-get install python3-pip
+# RUN apt install -y python3-xyz
+RUN rm -rf /usr/lib/python3.11/EXTERNALLY-MANAGED
 RUN yes | pip3 install meson
 RUN yes | pip3 install ninja
 
