@@ -2,16 +2,16 @@
 # and sending messages via TCP or UDP
 
 general: {
-	enabled = false						# By default the module is not enabled
+	enabled = true						# By default the module is not enabled
 	events = "all"
 										# Comma separated list of the events mask you're interested
 										# in. Valid values are none, sessions, handles, jsep, webrtc,
 										# media, plugins, transports, core, external and all. By
 										# default we subscribe to everything (all)
 
-	backend = "your.graylog.server"		# DNS or IP of your Graylog server
+	backend = "192.168.56.167"		# DNS or IP of your Graylog server
 	port = "12201"						# Port Graylog server is listening on
-	protocol = "tcp"					# tcp or udp transport type
+	protocol = "udp"					# tcp or udp transport type
 	max_message_len = 1024				# Note that we add 12 bytes of headers + standard UDP headers (8 bytes) 
 										# when calculating packet size based on MTU   
 

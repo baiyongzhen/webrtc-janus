@@ -444,8 +444,8 @@ loggers: {
 # events): if you'd rather receive a single containing all media stats in a
 # single array, set 'combine_media_stats' to true.
 events: {
-	#broadcast = true
-	#combine_media_stats = true
+	broadcast = true
+	combine_media_stats = true
 	#disable = "libjanus_sampleevh.so"
 	#stats_period = 5
 }
